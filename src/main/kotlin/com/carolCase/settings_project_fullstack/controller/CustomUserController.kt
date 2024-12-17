@@ -30,12 +30,12 @@ class CustomUserController @Autowired constructor
     @PostMapping
     fun saveUser( @Valid @RequestBody newUser: CustomUser): ResponseEntity<Map<String, String>>
     {
-        if (customUserRepository.existsByName(newUser.name)) {
+        if (customUserRepository.existsByUserName(newUser.userName)) {
             val response = mapOf("error" to "Username already exists")
             return ResponseEntity.badRequest().body(response)
         }
         val bcryptUser = CustomUser(
-            newUser.name,
+            newUser.userName,
             passwordEncoder.encode(newUser.password)
         )
         customUserRepository.save(bcryptUser)
