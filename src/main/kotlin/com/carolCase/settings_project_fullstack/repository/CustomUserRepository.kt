@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CustomUserRepository: JpaRepository<CustomUser, Long> {
-
+    fun existsByUsername(username: String): Boolean
 }

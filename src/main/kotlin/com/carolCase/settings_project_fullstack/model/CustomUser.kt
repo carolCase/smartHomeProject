@@ -11,12 +11,12 @@ import jakarta.validation.constraints.Size
 @Entity
 
 class CustomUser(
-    @NotEmpty
-    @Size(min = 2, max = 16)
+    @field:NotEmpty
+    @field:Size(min = 2, max = 16)
     val name: String = "",
 
-    @NotEmpty
-    @Size(min = 2, max = 6)   //if b crypt max at least 74
+    @field:NotEmpty
+    @field:Size(min = 3, max = 6)   //if b crypt max at least 74
     val password: String = "",
 
 
