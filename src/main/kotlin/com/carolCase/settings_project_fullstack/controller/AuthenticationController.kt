@@ -1,5 +1,7 @@
 package com.carolCase.settings_project_fullstack.controller
 
+import com.carolCase.settings_project_fullstack.config.jwt.JwtUtil
+import com.carolCase.settings_project_fullstack.model.CustomUserDetails
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 
 @RestController
-class AuthenticationController<JwtUtil> @Autowired constructor(
+class AuthenticationController @Autowired constructor(
     val authenticationManager: AuthenticationManager,
     val jwtUtil: JwtUtil
 ) {

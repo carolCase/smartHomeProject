@@ -1,5 +1,6 @@
 package com.carolCase.settings_project_fullstack.config.jwt
 
+import com.carolCase.settings_project_fullstack.model.CustomUserDetailsService
 import io.micrometer.common.lang.NonNull
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException

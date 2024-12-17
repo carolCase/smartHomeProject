@@ -1,53 +1,63 @@
 package com.carolCase.settings_project_fullstack.config
 
 import com.carolCase.settings_project_fullstack.config.jwt.JwtAuthenticationFilter
-import com.carolCase.settings_project_fullstack.model.CustomUser
-import org.springframework.beans.factory.annotation.Autowired
+import com.carolCase.settings_project_fullstack.model.authority.UserPermission
+import com.carolCase.settings_project_fullstack.model.authority.UserRole
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+
 @Configuration
 @EnableWebSecurity
-class SecurityConfig @Autowired constructor(
-    val passwordEncoder: PasswordEncoder,
-    val jwtAuthenticationFilter: JwtAuthenticationFilter
-    // TODO  val customUserDetailsService: CustomUserDetailsService,
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter
 ) {
-
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
-
+    @Bean
+    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        return authenticationConfiguration.authenticationManager
+    }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { it.disable() }
-            .cors { Customizer.withDefaults<CorsConfigurer<HttpSecurity>>() }
+            .csrf { it.disable() } // Disables CSRF (Cross-Site Request Forgery) protection
+            .cors { it.configurationSource { request ->
+                // CORS configuration specifically for Spring Security
+                org.springframework.web.cors.CorsConfiguration().apply {
+                    allowedOrigins = listOf("http://localhost:3003") // Frontend origin
+                    allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH")
+                    allowedHeaders = listOf("*")
+                    allowCredentials = true
+                }
+            }} // Enable CORS
+
             .authorizeHttpRequests { it
                 .requestMatchers("/", "/login", "/logout", "/user", "/user/password", "/who-am-i").permitAll()
-             //   .requestMatchers("/user/admin").hasRole(ADMIN.name) // UserRole.ADMIN.name
-              //  .requestMatchers("/user/user").hasRole(USER.name)
-              //  .requestMatchers("/user/read").hasAnyAuthority(UserPermission.READ.getContent())
-                .anyRequest().authenticated() // Must Log In
+                .requestMatchers("/user/admin").hasRole(UserRole.ADMIN.name) // Ensure the role has "ROLE_" prefix
+                .requestMatchers("/user/user").hasRole(UserRole.USER.name)
+                .requestMatchers("/user/read").hasAnyAuthority(UserPermission.READ.getContent())
+                .anyRequest().authenticated() // Require authentication for all other requests
             }
-
-            // .authenticationProvider(customDaoAuthenticationProvider())
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java) // on each request
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) } // Stateless session
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java) // Add JWT filter before UsernamePasswordAuthenticationFilter
 
         return http.build()
     }
 }
+
+
