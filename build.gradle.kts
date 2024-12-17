@@ -30,6 +30,9 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation ("org.springframework.security:spring-security-crypto:6.1.2")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 }
 
