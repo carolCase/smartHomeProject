@@ -19,7 +19,7 @@ class JwtUtil {
         "U2VjdXJlQXBpX1NlY3JldEtleV9mb3JfSFMyNTYwX3NlY3JldF9wcm9qZWN0X2tleV9leGFtcGxl"
     private val keyBytes: ByteArray = Base64.getDecoder().decode(base64EncodedSecretKey)
 
-    // Generate the secret key for signing
+
     private val key: SecretKey = Keys.hmacShaKeyFor(keyBytes)
 
     // JWT expiration time (1 hour in milliseconds)
@@ -30,8 +30,8 @@ class JwtUtil {
      */
     fun generateJwtToken(username: String, role: String): String {
         return Jwts.builder()
-            .setSubject(username) // Set the subject, usually the username
-            .claim("role", role) // Custom claim for role
+            .setSubject(username)
+            .claim("role", role)
             .setIssuedAt(Date(System.currentTimeMillis())) // Issued time
             .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs)) // Expiration time
             .signWith(key) // Sign the token with the key
@@ -39,13 +39,13 @@ class JwtUtil {
     }
 
     fun getUsernameFromJwtToken(token: String?): String {
-        val claims = Jwts.parserBuilder() // Use parserBuilder() instead of parser()
-            .setSigningKey(key) // Use the secret key here
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(key)
             .build()
-            .parseClaimsJws(token) // Parse the signed JWT
+            .parseClaimsJws(token)
             .body
 
-        return claims.subject // Extract the username (subject) from claims
+        return claims.subject
     }
 
 
@@ -79,4 +79,29 @@ class JwtUtil {
             false
         }
     }
+
+    // Generate refresh token (long expiration time)
+    fun generateRefreshToken(username: String): String {
+        return Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7))) // 7 days expiration
+            .signWith(key)
+            .compact()
+    }
+
+    // Validate refresh token
+    fun validateRefreshToken(token: String): Boolean {
+        return try {
+            Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+            true
+        } catch (e: Exception) {
+            logger.error("Invalid refresh token: ${e.message}")
+            false
+        }
+    }
+
 }

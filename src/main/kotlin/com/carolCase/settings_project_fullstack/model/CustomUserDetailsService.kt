@@ -18,7 +18,7 @@ class CustomUserDetailsService(
         if (username == null) {
             throw NullPointerException("Username is null")
         }
-
+        println("Looking for user: $username")
         // Query the database and handle nullable result
         val user = customUserRepository.findByUserName(username)
             ?: throw UsernameNotFoundException("Username '$username' wasn't found")
@@ -26,7 +26,7 @@ class CustomUserDetailsService(
         println("Username was found!")
 
         return CustomUserDetails(
-            user.userName, // Assuming "name" is the username field
+            user.userName,
             user.password,
             user.role
         )

@@ -39,18 +39,29 @@ class SecurityConfig(
             .cors { it.configurationSource { request ->
                 // CORS configuration specifically for Spring Security
                 org.springframework.web.cors.CorsConfiguration().apply {
-                    allowedOrigins = listOf("http://localhost:3003") // Frontend origin
+                    allowedOrigins = listOf("http://localhost:3000") // Frontend origin
                     allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH")
                     allowedHeaders = listOf("*")
-                    allowCredentials = true
+                    allowCredentials = (true)
                 }
-            }} // Enable CORS
+            }}
+        http
+            .formLogin { it
+                .permitAll()
+              //  .defaultSuccessUrl("/", true)
+               // .failureUrl("/login?error=true")
+            }
+            .logout { it
+                .logoutUrl("/logout").permitAll()
+            }
+
 
             .authorizeHttpRequests { it
-                .requestMatchers("/", "/login", "/logout", "/user", "/user/password", "/who-am-i").permitAll()
-                .requestMatchers("/user/admin").hasRole(UserRole.ADMIN.name) // Ensure the role has "ROLE_" prefix
-                .requestMatchers("/user/user").hasRole(UserRole.USER.name)
-                .requestMatchers("/user/read").hasAnyAuthority(UserPermission.READ.getContent())
+              //  .anyRequest().permitAll()
+                .requestMatchers("/", "/login", "/logout", "/who-am-i").permitAll()
+                .requestMatchers("/users/admin").hasAuthority(UserRole.ADMIN.name)
+                .requestMatchers("/users/user").hasRole(UserRole.USER.name)
+                .requestMatchers("/users/read").hasAnyAuthority(UserPermission.READ.getContent())
                 .anyRequest().authenticated() // Require authentication for all other requests
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) } // Stateless session

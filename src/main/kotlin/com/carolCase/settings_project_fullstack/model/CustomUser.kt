@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 
 
 @Entity
-@Table(name = "custom_user")
+@Table(name = "users")
  data class CustomUser(
 
 
@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size
     val userName: String = "",
 
    @field:NotEmpty
-    @field:Size(min = 3, max = 6)   //if b crypt max at least 74
+    @field:Size(min = 3, max = 76)
     val password: String = "",
 
 
