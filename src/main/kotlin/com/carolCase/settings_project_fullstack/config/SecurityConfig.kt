@@ -1,16 +1,21 @@
 package com.carolCase.settings_project_fullstack.config
 
 import com.carolCase.settings_project_fullstack.config.jwt.JwtAuthenticationFilter
+import com.carolCase.settings_project_fullstack.model.CustomUserDetails
+import com.carolCase.settings_project_fullstack.model.CustomUserDetailsService
 import com.carolCase.settings_project_fullstack.model.authority.UserPermission
 import com.carolCase.settings_project_fullstack.model.authority.UserRole
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -18,19 +23,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+class SecurityConfig @Autowired constructor(
+    val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    val passwordEncoder: PasswordEncoder,
+    val customUserDetailsService: CustomUserDetailsService
+
 ) {
 
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
-
-    @Bean
-    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
-        return authenticationConfiguration.authenticationManager
-    }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -46,16 +45,6 @@ class SecurityConfig(
                 }
             }}
         http
-            .formLogin { it
-                .permitAll()
-              //  .defaultSuccessUrl("/", true)
-               // .failureUrl("/login?error=true")
-            }
-            .logout { it
-                .logoutUrl("/logout").permitAll()
-            }
-
-
             .authorizeHttpRequests { it
               //  .anyRequest().permitAll()
                 .requestMatchers("/", "/login", "/logout", "/who-am-i").permitAll()
@@ -68,6 +57,23 @@ class SecurityConfig(
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java) // Add JWT filter before UsernamePasswordAuthenticationFilter
 
         return http.build()
+    }
+
+
+
+    @Bean
+    @Throws(Exception::class)
+    fun authenticationManager(http: HttpSecurity): AuthenticationManager {
+        val daoAuthenticationProvider = DaoAuthenticationProvider()
+        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService)
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder)
+
+        val authenticationManagerBuilder = http.getSharedObject(
+            AuthenticationManagerBuilder::class.java
+        )
+        authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider)
+
+        return authenticationManagerBuilder.build()
     }
 }
 

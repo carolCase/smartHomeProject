@@ -45,6 +45,16 @@ class CustomUserController @Autowired constructor
 
     }
 
+    @GetMapping("/im-i-logged-in")
+    fun checkIfLoggedIn(): ResponseEntity<String>{
+        return ResponseEntity.ok("You are logged in")
+    }
+
+
+
+
+
+
 
     @GetMapping
     fun getAllCustomUsers(): ResponseEntity<List<CustomUser>> {
@@ -63,8 +73,6 @@ class CustomUserController @Autowired constructor
 
         return customUserRepository.save(updatedUser)
     }
-
-
 
 
     @DeleteMapping("/{id}")

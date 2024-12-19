@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CustomUserRepository: JpaRepository<CustomUser, Long> {
-    fun findByUserName(username: String): CustomUser?
-    fun existsByUserName(username: String): Boolean
+    fun findByUserName(userName: String): CustomUser?
+    fun existsByUserName(userName: String): Boolean
 }

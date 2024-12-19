@@ -1,6 +1,7 @@
 package com.carolCase.settings_project_fullstack.model
 
 import com.carolCase.settings_project_fullstack.model.authority.UserRole
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Size
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.Size
     @field:Size(min = 2, max = 16)
     val userName: String = "",
 
+  // @JsonIgnore
    @field:NotEmpty
     @field:Size(min = 3, max = 76)
     val password: String = "",
