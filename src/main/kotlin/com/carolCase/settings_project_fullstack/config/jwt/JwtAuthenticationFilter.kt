@@ -30,7 +30,10 @@ class JwtAuthenticationFilter @Autowired constructor(
         println("---JwtAuthenticationFilter---")
         println("---START---")
         println("EXTRACTING FROM REQUEST")
-        val token = extractJwtFromCookie(request)
+        var token: String? = extractJwtFromCookie(request)
+        if (token == null){
+            token = extractJwtFromRequest(request)
+        }
         println("TOKEN: $token")
         println("---END---")
 
@@ -66,7 +69,7 @@ class JwtAuthenticationFilter @Autowired constructor(
 
     private fun extractJwtFromRequest(request: HttpServletRequest): String? {
         val header = request.getHeader(HttpHeaders.AUTHORIZATION)
-        if (header != null && header.startsWith("Bearer ")) {
+        if (header != null && header.startsWith("Bearer")) {
             return header.substring(7) // Extract the token part after "Bearer "
         }
         return null

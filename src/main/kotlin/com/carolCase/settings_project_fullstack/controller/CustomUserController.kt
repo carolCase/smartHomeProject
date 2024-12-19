@@ -45,11 +45,18 @@ class CustomUserController @Autowired constructor
 
     }
 
+
+
     @GetMapping("/im-i-logged-in")
     fun checkIfLoggedIn(): ResponseEntity<String>{
         return ResponseEntity.ok("You are logged in")
     }
 
+    @GetMapping("/{id}")
+    fun getUserById(@PathVariable id: Long): CustomUser {
+        return customUserRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: $id") }
+    }
 
 
 
