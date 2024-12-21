@@ -1,14 +1,11 @@
 package com.carolCase.settings_project_fullstack.config.jwt
 
 import com.carolCase.settings_project_fullstack.model.CustomUserDetailsService
-import io.jsonwebtoken.Jwts
-import io.micrometer.common.lang.NonNull
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -19,34 +16,40 @@ import java.io.IOException
 class JwtAuthenticationFilter @Autowired constructor(
     private val jwtUtils: JwtUtil,
     private val customUserDetailsService: CustomUserDetailsService
-): OncePerRequestFilter() {
+) : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
-        @NonNull request: HttpServletRequest,
-        @NonNull response: HttpServletResponse,
-        @NonNull filterChain: FilterChain
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
     ) {
+        // Skip authentication for the /register endpoint
+        if (request.requestURI.startsWith("/register")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         println("---JwtAuthenticationFilter---")
         println("---START---")
         println("EXTRACTING FROM REQUEST")
-        var token: String? = extractJwtFromCookie(request)
-        if (token == null){
-            token = extractJwtFromRequest(request)
-        }
+
+        // Extract the token from cookies
+        val token: String? = extractJwtFromCookie(request)
         println("TOKEN: $token")
         println("---END---")
 
         if (token != null && jwtUtils.validateJwtToken(token)) {
+            // If the token is valid, extract the username and load user details
             val username: String = jwtUtils.getUsernameFromJwtToken(token)
             val userDetails = customUserDetailsService.loadUserByUsername(username)
 
+            // Create an authentication token and set it in the SecurityContext
             val authenticationToken = UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
                 userDetails.authorities
             )
-
             SecurityContextHolder.getContext().authentication = authenticationToken
         }
 
@@ -65,16 +68,4 @@ class JwtAuthenticationFilter @Autowired constructor(
         }
         return null
     }
-
-
-    private fun extractJwtFromRequest(request: HttpServletRequest): String? {
-        val header = request.getHeader(HttpHeaders.AUTHORIZATION)
-        if (header != null && header.startsWith("Bearer")) {
-            return header.substring(7) // Extract the token part after "Bearer "
-        }
-        return null
-    }
 }
-
-
-

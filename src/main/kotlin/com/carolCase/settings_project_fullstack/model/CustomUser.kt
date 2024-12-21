@@ -17,15 +17,15 @@ import jakarta.validation.constraints.Size
     @field:Size(min = 2, max = 16)
     val userName: String = "",
 
-  // @JsonIgnore
+
    @field:NotEmpty
     @field:Size(min = 3, max = 76)
     val password: String = "",
 
 
 
-   val avatar: String = "",
-   val isAdmin: Boolean = false,
+  // val avatar: String = "",
+  // val isAdmin: Boolean = false,
 
    @Enumerated(value = EnumType.STRING)
    var role: UserRole = UserRole.USER,

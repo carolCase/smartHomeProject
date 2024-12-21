@@ -7,6 +7,7 @@ import com.carolCase.settings_project_fullstack.model.authority.UserRole
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer
@@ -40,13 +41,14 @@ class SecurityConfig @Autowired constructor(
 
             .cors{Customizer.withDefaults<CorsConfigurer<HttpSecurity>>()}
             .authorizeHttpRequests { it
-               // .anyRequest().permitAll()
-               .requestMatchers("/", "/login", "/logout", "/who-am-i").permitAll()
-                .requestMatchers("/users").permitAll()
-              .requestMatchers("/users/admin").hasAuthority(UserRole.ADMIN.name)
-                .requestMatchers("/users/user").hasRole(UserRole.USER.name)
-               .requestMatchers("/users/read").hasAnyAuthority(UserPermission.READ.getContent())
-               .anyRequest().authenticated() // Require authentication for all other requests
+                .anyRequest().permitAll()
+              //.requestMatchers("/", "/login", "/logout", "/who-am-i","/register").permitAll()
+            //  .requestMatchers(HttpMethod.POST, "/register").permitAll()
+             //  .requestMatchers(HttpMethod.POST, "/users").permitAll()
+            //  .requestMatchers("/users/admin").hasAuthority(UserRole.ADMIN.name)
+             //   .requestMatchers("/users/user").hasRole(UserRole.USER.name)
+            //   .requestMatchers("/users/read").hasAnyAuthority(UserPermission.READ.getContent())
+             //  .anyRequest().authenticated() // Require authentication for all other requests
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
