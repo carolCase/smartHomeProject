@@ -31,13 +31,14 @@ class SecurityConfig(
                 it
                     .requestMatchers("/", "/login", "/logout", "/who-am-i", "/register").permitAll()
                     .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/users").permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .userDetailsService(houseUserDetailsService)
+           // .userDetailsService(houseUserDetailsService)
 
         return http.build()
     }

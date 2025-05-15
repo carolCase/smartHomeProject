@@ -23,7 +23,7 @@ class JwtUtil {
     private val key: SecretKey = Keys.hmacShaKeyFor(keyBytes)
 
     // JWT expiration time (1 hour in milliseconds)
-    private val jwtExpirationMs = TimeUnit.HOURS.toMillis(1).toInt()
+    private val jwtExpirationMs = TimeUnit.HOURS.toMillis(4).toInt()
 
     /**
      * Generates a JWT token for the given username and role.

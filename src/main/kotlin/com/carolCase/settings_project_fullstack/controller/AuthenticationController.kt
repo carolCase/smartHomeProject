@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.TimeUnit
+import com.carolCase.settings_project_fullstack.model.dto.RoleRequest
 
 @RestController
 class AuthenticationController @Autowired constructor(
@@ -42,6 +44,13 @@ class AuthenticationController @Autowired constructor(
     ): ResponseEntity<String> {
         if (username.isNullOrBlank() || password.isNullOrBlank()) {
             return ResponseEntity.badRequest().body("Username and password are required")
+        }
+        val user = houseUserRepository.findByEmail(username!!)
+        if (user == null) {
+            println("❌ User not found: $username")
+        } else {
+            println("✅ Found user: ${user.email}")
+            println("🧩 Password matches: ${passwordEncoder.matches(password, user.passwordHash)}")
         }
 
         return try {
@@ -76,36 +85,61 @@ class AuthenticationController @Autowired constructor(
     }
 
     @GetMapping("/who-am-i")
-    fun checkedLoggedInUser(request: HttpServletRequest): ResponseEntity<String> {
+    fun checkedLoggedInUser(): ResponseEntity<Any> {
         val auth = SecurityContextHolder.getContext().authentication
 
-        return if (auth != null && auth.isAuthenticated) {
-            val username = auth.name
-            val roles = auth.authorities.joinToString(",") { it.authority }
-            ResponseEntity.ok("Logged in as: $username ($roles)")
+        return if (auth != null && auth.isAuthenticated && auth.principal is HouseUserDetails) {
+            val user = auth.principal as HouseUserDetails
+
+            val responseBody = mapOf(
+                "email" to user.username,
+                "fullName" to user.getFullName(),
+                "role" to user.authorities.joinToString(",") { it.authority.replace("ROLE_", "") }
+            )
+
+            ResponseEntity.ok(responseBody)
         } else {
-            ResponseEntity.status(401).body("User is not authenticated")
+            ResponseEntity.status(401).body(mapOf("error" to "User is not authenticated"))
         }
     }
+
 
     @PostMapping("/register")
     fun registerUser(
         @RequestBody @Valid request: RegisterRequest
     ): ResponseEntity<String> {
+        println("📩 RECEIVED REGISTER REQUEST: $request")
         if (houseUserRepository.findByEmail(request.email) != null) {
             return ResponseEntity.status(409).body("Email already registered")
         }
 
+        val isFirstUser = houseUserRepository.count().toInt() == 0
         val newUser = HouseUser(
             email = request.email,
             passwordHash = passwordEncoder.encode(request.password),
             fullName = request.fullName,
-            role = Role.MEMBER
+            role = if (isFirstUser) Role.OWNER else Role.GUEST
         )
 
         houseUserRepository.save(newUser)
 
         return ResponseEntity.status(201).body("User registered successfully")
     }
+    @PatchMapping("/users/{id}/role")
+    @PreAuthorize("hasRole('OWNER')")
+    fun changeUserRole(
+        @PathVariable id: Long,
+        @RequestBody roleRequest: RoleRequest
+    ): ResponseEntity<String> {
+        val user = houseUserRepository.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        user.role = roleRequest.role
+        houseUserRepository.save(user)
+        return ResponseEntity.ok("Role updated to ${roleRequest.role}")
+    }
+
+
+
 
 }

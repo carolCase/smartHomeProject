@@ -14,7 +14,7 @@ class CorsConfig {
         val corsConfiguration = CorsConfiguration()
 
         corsConfiguration.allowedOrigins = listOf("http://localhost:3000")
-        corsConfiguration.allowedMethods = listOf("GET", "POST", "DELETE", "PUT", "PATCH")
+        corsConfiguration.allowedMethods = listOf("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS")
         corsConfiguration.allowedHeaders = listOf("Content-Type", "Authorization", "X-Requested-With")
         corsConfiguration.allowCredentials = true
 

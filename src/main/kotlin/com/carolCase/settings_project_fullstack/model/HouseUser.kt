@@ -20,7 +20,7 @@ data class HouseUser(
     val fullName: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val role: Role = Role.MEMBER,
+    var role: Role = Role.MEMBER,
 
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()

@@ -9,6 +9,8 @@ class HouseUserDetails(
     private val user: HouseUser
 ) : UserDetails {
 
+
+
     override fun getUsername(): String = user.email
 
     override fun getPassword(): String = user.passwordHash
