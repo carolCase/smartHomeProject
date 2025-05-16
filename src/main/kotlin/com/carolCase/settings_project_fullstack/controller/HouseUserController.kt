@@ -28,29 +28,7 @@ class HouseUserController<HttpServletRequest>(
     @PreAuthorize("hasRole('OWNER')")
     fun adminEndpoint(): String = "Only OWNERs can see this"
 
-    @GetMapping("/who-am-i")
-    fun checkedLoggedInUser(request: HttpServletRequest): ResponseEntity<Any> {
-        val auth = SecurityContextHolder.getContext().authentication
 
-        if (auth != null && auth.isAuthenticated && auth.principal is HouseUserDetails) {
-            val userDetails = auth.principal as HouseUserDetails
-            val houseUser = houseUserRepository.findByEmail(userDetails.username)
-
-            return if (houseUser != null) {
-                ResponseEntity.ok(
-                    mapOf(
-                        "email" to houseUser.email,
-                        "fullName" to houseUser.fullName,
-                        "role" to houseUser.role
-                    )
-                )
-            } else {
-                ResponseEntity.status(404).body("User not found")
-            }
-        }
-
-        return ResponseEntity.status(401).body("Not authenticated")
-    }
 
 
 }

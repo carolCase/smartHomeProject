@@ -21,7 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import java.util.concurrent.TimeUnit
+
 import com.carolCase.settings_project_fullstack.model.dto.RoleRequest
 
 @RestController
@@ -39,18 +39,10 @@ class AuthenticationController @Autowired constructor(
     @PostMapping("/login")
     fun authenticateUser(
         @RequestParam username: String?,
-        @RequestParam password: String?,
-        response: HttpServletResponse
-    ): ResponseEntity<String> {
+        @RequestParam password: String?
+    ): ResponseEntity<Map<String, String>> {
         if (username.isNullOrBlank() || password.isNullOrBlank()) {
-            return ResponseEntity.badRequest().body("Username and password are required")
-        }
-        val user = houseUserRepository.findByEmail(username!!)
-        if (user == null) {
-            println("❌ User not found: $username")
-        } else {
-            println("✅ Found user: ${user.email}")
-            println("🧩 Password matches: ${passwordEncoder.matches(password, user.passwordHash)}")
+            return ResponseEntity.badRequest().body(mapOf("error" to "Username and password are required"))
         }
 
         return try {
@@ -60,7 +52,7 @@ class AuthenticationController @Autowired constructor(
             val principal = authentication.principal
             if (principal !is HouseUserDetails) {
                 return ResponseEntity.internalServerError()
-                    .body("Authenticated principal is not of type HouseUserDetails")
+                    .body(mapOf("error" to "Invalid principal"))
             }
 
             val token = jwtUtil.generateJwtToken(
@@ -68,40 +60,35 @@ class AuthenticationController @Autowired constructor(
                 principal.authorities.joinToString(",") { it.authority }
             )
 
-            val cookie = Cookie("authToken", token).apply {
-                isHttpOnly = true
-                secure = false
-                path = "/"
-                maxAge = TimeUnit.HOURS.toSeconds(1).toInt()
-            }
-
-            response.addCookie(cookie)
-
-            ResponseEntity.ok(token)
+            ResponseEntity.ok(mapOf("token" to token))
 
         } catch (e: BadCredentialsException) {
-            ResponseEntity.status(401).body("Bad credentials")
+            ResponseEntity.status(401).body(mapOf("error" to "Bad credentials"))
         }
     }
+
+
 
     @GetMapping("/who-am-i")
-    fun checkedLoggedInUser(): ResponseEntity<Any> {
+    fun checkedLoggedInUser(request: HttpServletRequest): ResponseEntity<Any> {
         val auth = SecurityContextHolder.getContext().authentication
 
-        return if (auth != null && auth.isAuthenticated && auth.principal is HouseUserDetails) {
-            val user = auth.principal as HouseUserDetails
-
-            val responseBody = mapOf(
-                "email" to user.username,
-                "fullName" to user.getFullName(),
-                "role" to user.authorities.joinToString(",") { it.authority.replace("ROLE_", "") }
-            )
-
-            ResponseEntity.ok(responseBody)
-        } else {
-            ResponseEntity.status(401).body(mapOf("error" to "User is not authenticated"))
+        if (auth == null || !auth.isAuthenticated || auth.principal !is HouseUserDetails) {
+            return ResponseEntity.status(401).body(mapOf("error" to "User is not authenticated"))
         }
+
+        val user = auth.principal as HouseUserDetails
+
+        val response = mapOf(
+            "email" to user.username,
+            "fullName" to user.getFullName(),
+            "role" to user.authorities.joinToString(",") { it.authority.replace("ROLE_", "") }
+        )
+
+        return ResponseEntity.ok(response)
     }
+
+
 
 
     @PostMapping("/register")

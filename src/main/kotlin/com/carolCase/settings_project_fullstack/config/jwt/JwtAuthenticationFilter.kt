@@ -34,10 +34,9 @@ class JwtAuthenticationFilter @Autowired constructor(
         println("---START---")
         println("EXTRACTING FROM REQUEST")
 
-        // Extract the token from cookies
-        val token: String? = extractJwtFromCookie(request)
-        println("TOKEN: $token")
-        println("---END---")
+        val authHeader = request.getHeader("Authorization")
+        val token = authHeader?.takeIf { it.startsWith("Bearer ") }?.removePrefix("Bearer ")
+
 
         if (token != null && jwtUtils.validateJwtToken(token)) {
             // If the token is valid, extract the username and load user details
@@ -56,16 +55,5 @@ class JwtAuthenticationFilter @Autowired constructor(
         filterChain.doFilter(request, response)
     }
 
-    private fun extractJwtFromCookie(request: HttpServletRequest): String? {
-        // Extract JWT from cookies
-        val cookies = request.cookies
-        if (cookies != null) {
-            for (cookie in cookies) {
-                if ("authToken" == cookie.name) {
-                    return cookie.value // Return the token if found
-                }
-            }
-        }
-        return null
-    }
+
 }
