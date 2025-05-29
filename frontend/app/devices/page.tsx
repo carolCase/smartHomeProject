@@ -4,6 +4,8 @@ import Sidebar from "../components/sidebars/Sidebar"
 import SidebarMember from "../components/sidebars/MemberSidebar"
 import { useRouter } from "next/navigation"
 export default function Devices() {
+  const [selectedRoom, setSelectedRoom] = useState("Living Room")
+  const rooms = ["Living Room", "Kitchen", "Bedroom", "Bathroom"]
   const [lightBrightness, setLightBrightness] = useState(50)
   const [temperature, setTemperature] = useState(22)
   const [volume, setVolume] = useState(30)
@@ -57,6 +59,20 @@ export default function Devices() {
             {/*Lights*/}
             <div className="bg-white bg-opacity-80 p-6 rounded-lg shadow-lg">
               <h3 className="text-xl text-gray-500 font-medium mb-4">Lights</h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={selectedRoom}
+                  onChange={(e) => setSelectedRoom(e.target.value)}
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700"
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label
                 htmlFor="light-brightness"
                 className="block mb-2 text-gray-500"

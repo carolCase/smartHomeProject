@@ -10,6 +10,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
     fullName: "",
+    registrationCode: "",
   })
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -69,6 +70,15 @@ export default function RegisterPage() {
             placeholder="Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
+            className="bg-white/30 placeholder-white text-white border border-white/30"
+          />
+          <Input
+            type="text"
+            placeholder="Registration Code"
+            value={form.registrationCode}
+            onChange={(e) =>
+              setForm({ ...form, registrationCode: e.target.value })
+            }
             className="bg-white/30 placeholder-white text-white border border-white/30"
           />
 

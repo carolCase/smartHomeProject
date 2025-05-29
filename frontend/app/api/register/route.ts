@@ -12,12 +12,14 @@ export async function POST(req: NextRequest) {
       email: body.email,
       password: body.password,
       fullName: body.fullName || "Smart Home User",
+      registrationCode: body.registrationCode || null,
     }),
   })
   console.log("Sending to backend:", {
     email: body.email,
     password: body.password,
     fullName: body.fullName,
+    registrationCode: body.registrationCode,
   })
 
   console.log("📥 Backend response:", response.status, response.headers)
