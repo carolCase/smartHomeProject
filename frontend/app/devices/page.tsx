@@ -4,8 +4,16 @@ import Sidebar from "../components/sidebars/Sidebar"
 import SidebarMember from "../components/sidebars/MemberSidebar"
 import { useRouter } from "next/navigation"
 export default function Devices() {
-  const [selectedRoom, setSelectedRoom] = useState("Living Room")
+  const [deviceRooms, setDeviceRooms] = useState({
+    lights: "Living Room",
+    temperature: "Living Room",
+    speaker: "Living Room",
+    door: "Living Room",
+    curtains: "Living Room",
+    camera: "Living Room",
+  })
   const rooms = ["Living Room", "Kitchen", "Bedroom", "Bathroom"]
+
   const [lightBrightness, setLightBrightness] = useState(50)
   const [temperature, setTemperature] = useState(22)
   const [volume, setVolume] = useState(30)
@@ -62,9 +70,13 @@ export default function Devices() {
               <div className="mb-4">
                 <label className="block mb-1 text-gray-500">Room:</label>
                 <select
-                  value={selectedRoom}
-                  onChange={(e) => setSelectedRoom(e.target.value)}
-                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700"
+                  value={deviceRooms.lights}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      lights: e.target.value,
+                    }))
+                  }
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -95,6 +107,24 @@ export default function Devices() {
               <h3 className="text-xl  text-gray-500 font-medium mb-4">
                 Temperature
               </h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={deviceRooms.temperature}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      temperature: e.target.value,
+                    }))
+                  }
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label htmlFor="temperature" className="block mb-2 text-gray-500">
                 Temperature: {temperature}°C
               </label>
@@ -112,6 +142,24 @@ export default function Devices() {
               <h3 className="text-xl   text-gray-500 font-medium mb-4">
                 Speaker
               </h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={deviceRooms.speaker}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      speaker: e.target.value,
+                    }))
+                  }
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label htmlFor="volume" className="block mb-2 text-gray-500">
                 Volume: {volume}%
               </label>
@@ -131,6 +179,24 @@ export default function Devices() {
               <h3 className="text-xl  text-gray-500 font-medium mb-4">
                 Door Lock
               </h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={deviceRooms.door}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      door: e.target.value,
+                    }))
+                  }
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label htmlFor="door-lock" className="block mb-2 text-gray-500">
                 Locked: {doorLocked ? "Yes" : "No"}
               </label>
@@ -149,6 +215,24 @@ export default function Devices() {
               <h3 className="text-xl  text-gray-500 font-medium mb-4">
                 Curtains
               </h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={deviceRooms.curtains}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      curtains: e.target.value,
+                    }))
+                  }
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label
                 htmlFor="curtain-open"
                 className="block mb-2 text-gray-500"
@@ -171,6 +255,24 @@ export default function Devices() {
               <h3 className="text-xl  text-gray-500 font-medium mb-4">
                 Security Camera
               </h3>
+              <div className="mb-4">
+                <label className="block mb-1 text-gray-500">Room:</label>
+                <select
+                  value={deviceRooms.camera}
+                  onChange={(e) =>
+                    setDeviceRooms((prev) => ({
+                      ...prev,
+                      camera: e.target.value,
+                    }))
+                  }
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <label htmlFor="camera" className="block mb-2 text-gray-500">
                 Security Camera: {securityCamera ? "On" : "Off"}
               </label>
