@@ -77,6 +77,7 @@ export default function Devices() {
                       lights: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -117,6 +118,7 @@ export default function Devices() {
                       temperature: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -152,6 +154,7 @@ export default function Devices() {
                       speaker: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -189,6 +192,7 @@ export default function Devices() {
                       door: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -225,6 +229,7 @@ export default function Devices() {
                       curtains: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
@@ -265,6 +270,7 @@ export default function Devices() {
                       camera: e.target.value,
                     }))
                   }
+                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
                 >
                   {rooms.map((room) => (
                     <option key={room} value={room}>
