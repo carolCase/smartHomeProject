@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import Sidebar from "../components/sidebars/sidebar"
+import Sidebar from "../../components/Sidebar"
 import SidebarMember from "../components/sidebars/MemberSidebar"
 import { useRouter } from "next/navigation"
 export default function Devices() {
