@@ -92,26 +92,37 @@ class AuthenticationController @Autowired constructor(
 
 
     @PostMapping("/register")
-    fun registerUser(
-        @RequestBody @Valid request: RegisterRequest
-    ): ResponseEntity<String> {
+    fun registerUser(@RequestBody @Valid request: RegisterRequest): ResponseEntity<String> {
         println("📩 RECEIVED REGISTER REQUEST: $request")
+        println("🔍 Registration Code: ${request.registrationCode}")
+
         if (houseUserRepository.findByEmail(request.email) != null) {
             return ResponseEntity.status(409).body("Email already registered")
         }
 
-        val isFirstUser = houseUserRepository.count().toInt() == 0
+        val isFirstUser = houseUserRepository.count() == 0L
+        val validOwnerCode = "OWNER-CODE-123"
+
+        val role = when {
+            isFirstUser -> Role.OWNER
+            request.registrationCode == validOwnerCode -> Role.OWNER
+            else -> Role.GUEST
+        }
+        println("👤 Assigned Role: $role")
         val newUser = HouseUser(
             email = request.email,
             passwordHash = passwordEncoder.encode(request.password),
             fullName = request.fullName,
-            role = if (isFirstUser) Role.OWNER else Role.GUEST
+            role = role
         )
 
         houseUserRepository.save(newUser)
 
         return ResponseEntity.status(201).body("User registered successfully")
     }
+
+
+
     @PatchMapping("/users/{id}/role")
     @PreAuthorize("hasRole('OWNER')")
     fun changeUserRole(
