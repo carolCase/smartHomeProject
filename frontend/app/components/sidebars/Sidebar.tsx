@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "../ui/button"
 import { Home, Users, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
+import React from "react"
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
