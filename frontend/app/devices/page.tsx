@@ -51,9 +51,9 @@ export default function Devices() {
     fetchUserInfo()
   }, [])
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen min-h-screen items-stretch ">
       {role === "OWNER" ? <Sidebar /> : <SidebarMember />}
-      <div className="flex-1 p-6">
+      <div className="flex-1 overflow-y-auto p-6">
         <div className="pt-10">
           {fullName && (
             <h2 className="text-2xl font-semibold text-gray-700 mb-6">
