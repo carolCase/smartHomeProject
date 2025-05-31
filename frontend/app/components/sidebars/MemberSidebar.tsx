@@ -42,23 +42,6 @@ export default function Sidebar() {
             <Home size={20} />
             {!collapsed && <span>Devices</span>}
           </Link>
-
-          {!collapsed && (
-            <div className="ml-8 mt-1 text-sm space-y-1 text-white">
-              <Link
-                href="/devices/living-room"
-                className="block hover:underline"
-              >
-                Living Room
-              </Link>
-              <Link href="/devices/kitchen" className="block hover:underline">
-                Kitchen
-              </Link>
-              <Link href="/devices/bedroom" className="block hover:underline">
-                Bedroom
-              </Link>
-            </div>
-          )}
         </div>
       </nav>
       <Button

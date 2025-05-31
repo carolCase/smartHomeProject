@@ -49,15 +49,15 @@ export default function Devices() {
     }
 
     fetchUserInfo()
-  }, [])
+  }, [router])
   return (
     <div className="flex h-screen min-h-screen items-stretch ">
       {role === "OWNER" ? <Sidebar /> : <SidebarMember />}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="pt-10">
           {fullName && (
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6">
-              Welcome, {fullName}!
+            <h2 className="text-2xl font-semibold text-gray-300 mb-6">
+              Welcome, {fullName}! ,ready to control your smart home?
             </h2>
           )}
         </div>
@@ -254,43 +254,44 @@ export default function Devices() {
                 className="w-full h-2 bg-cyan-950 rounded-full"
               />
             </div>
-
             {/* Security Camera */}
-            <div className="bg-white bg-opacity-80 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl  text-gray-500 font-medium mb-4">
-                Security Camera
-              </h3>
-              <div className="mb-4">
-                <label className="block mb-1 text-gray-500">Room:</label>
-                <select
-                  value={deviceRooms.camera}
-                  onChange={(e) =>
-                    setDeviceRooms((prev) => ({
-                      ...prev,
-                      camera: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            {role !== "GUEST" && (
+              <div className="bg-white bg-opacity-80 p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl text-gray-500 font-medium mb-4">
+                  Security Camera
+                </h3>
+                <div className="mb-4">
+                  <label className="block mb-1 text-gray-500">Room:</label>
+                  <select
+                    value={deviceRooms.camera}
+                    onChange={(e) =>
+                      setDeviceRooms((prev) => ({
+                        ...prev,
+                        camera: e.target.value,
+                      }))
+                    }
+                    className="w-full px-3 py-2 rounded border border-gray-300 text-gray-700 bg-white shadow focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                  >
+                    {rooms.map((room) => (
+                      <option key={room} value={room}>
+                        {room}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <label htmlFor="camera" className="block mb-2 text-gray-500">
+                  Security Camera: {securityCamera ? "On" : "Off"}
+                </label>
+                <button
+                  onClick={() => setSecurityCamera(!securityCamera)}
+                  className={`w-full py-2 text-white rounded ${
+                    securityCamera ? "bg-red-500" : "bg-gray-500"
+                  }`}
                 >
-                  {rooms.map((room) => (
-                    <option key={room} value={room}>
-                      {room}
-                    </option>
-                  ))}
-                </select>
+                  {securityCamera ? "Turn Off" : "Turn On"}
+                </button>
               </div>
-              <label htmlFor="camera" className="block mb-2 text-gray-500">
-                Security Camera: {securityCamera ? "On" : "Off"}
-              </label>
-              <button
-                onClick={() => setSecurityCamera(!securityCamera)}
-                className={`w-full py-2 text-white rounded ${
-                  securityCamera ? "bg-red-500" : "bg-gray-500"
-                }`}
-              >
-                {securityCamera ? "Turn Off" : "Turn On"}
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </div>
